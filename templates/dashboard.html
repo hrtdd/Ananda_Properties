@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Ananda Properties</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <!-- Splash Screen -->
+    <div id="splashScreen" class="splash-screen">
+        <div class="splash-content">
+            <img src="{{ url_for('static', filename='images/Ananda Properties.png') }}" alt="Ananda Properties Logo" class="splash-logo-img">
+            <h1 class="splash-title">Ananda Properties</h1>
+            <p class="splash-subtitle">(AP)</p>
+            <div class="splash-loader">
+                <div class="loader-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container container--dashboard" id="mainContent" style="display: none;">
+        <!-- Page Header -->
+        <header class="page-header">
+            <div class="page-header__brand">
+                <img src="{{ url_for('static', filename='images/Ananda Properties.png') }}" alt="Ananda Properties" class="page-header__logo">
+                <div class="page-header__text">
+                    <h1 class="page-header__title">Ananda Properties</h1>
+                    <p class="page-header__tagline">Tenant Management · (AP)</p>
+                </div>
+            </div>
+            <nav class="page-header__nav">
+                <a href="/logout" class="page-header__logout">🚪 Logout</a>
+            </nav>
+        </header>
+
+        <!-- Main content -->
+        <main class="dashboard-main">
+            <div class="dashboard-intro">
+                <h2 class="dashboard-intro__title">Dashboard</h2>
+                <p class="dashboard-intro__desc">Manage your buildings, flats, and tenants efficiently</p>
+            </div>
+
+            <div class="dashboard-grid">
+            <a href="/add-building" class="dashboard-card">
+                <h3>➕ Add Building</h3>
+                <p>Register a new building to your portfolio</p>
+            </a>
+
+            <a href="/buildings" class="dashboard-card">
+                <h3>📋 View Buildings</h3>
+                <p>See all your buildings and their status</p>
+            </a>
+
+            <a href="/add-flat" class="dashboard-card">
+                <h3>🏠 Add Flat</h3>
+                <p>Add a new flat to an existing building</p>
+            </a>
+
+            <a href="/flats" class="dashboard-card">
+                <h3>🏢 View Flats</h3>
+                <p>Browse all flats and manage occupancy</p>
+            </a>
+
+            <a href="/tenants" class="dashboard-card">
+                <h3>👥 View Tenants</h3>
+                <p>See all registered tenants</p>
+            </a>
+
+            <a href="/tenant-documents" class="dashboard-card">
+                <h3>📄 Tenant Documents</h3>
+                <p>Search and manage tenant documents</p>
+            </a>
+            <a href="/current-info" class="dashboard-card">
+                <h3>📊 Current Info</h3>
+                <p>Check building-wise tenant & rent status</p>
+            </a>
+            <a href="/rent-alerts" class="dashboard-card">
+                <h3>🔔 Rent Alerts</h3>
+                <p>Owner view: overdue tenants & pending rent</p>
+            </a>
+            <a href="/pending-rent" class="dashboard-card">
+                <h3>📌 Pending Rent</h3>
+                <p>See tenants with unpaid rent</p>
+            </a>
+            </div>
+        </main>
+
+        <!-- Page Footer -->
+        <footer class="page-footer">
+            <div class="page-footer__inner">
+                <p class="page-footer__copy">© <span id="footerYear"></span> Ananda Properties (AP). All rights reserved.</p>
+                <div class="page-footer__links">
+                    <a href="/buildings">Buildings</a>
+                    <a href="/tenants">Tenants</a>
+                    <a href="/rent-alerts">Rent Alerts</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var yearEl = document.getElementById('footerYear');
+            if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+            var splashScreen = document.getElementById('splashScreen');
+            var mainContent = document.getElementById('mainContent');
+            
+            // Show splash screen for 4 seconds
+            setTimeout(function() {
+                splashScreen.style.opacity = '0';
+                splashScreen.style.transition = 'opacity 0.5s ease-out';
+                
+                setTimeout(function() {
+                    splashScreen.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    mainContent.style.animation = 'fadeIn 0.5s ease-in';
+                }, 500);
+            }, 4000);
+        });
+    </script>
+</body>
+</html>

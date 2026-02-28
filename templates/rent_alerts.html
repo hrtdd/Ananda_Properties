@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent Alerts - Owner View</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>🔔 Owner Rent Alerts</h2>
+        
+        <div class="nav-links">
+            <a href="/" class="nav-link back">🏠 Dashboard</a>
+            <a href="/current-info" class="nav-link back">📊 Current Info</a>
+        </div>
+
+        {% if overdue %}
+        <!-- Alert Summary Card -->
+        <div class="alert-summary-card">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-info">
+                <h3>{{ overdue|length }} Tenant{{ 's' if overdue|length > 1 else '' }} with Overdue Rent</h3>
+                <p>The following tenants have pending rent payments</p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Tenant</th>
+                    <th>Building</th>
+                    <th>Flat</th>
+                    <th>Rent Amount</th>
+                    <th>Due Date</th>
+                    <th>Late Days</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in overdue %}
+                <tr>
+                    <td>
+                        <a href="/tenant-profile/{{ t[0] }}">
+                            <strong>{{ t[1] }}</strong>
+                        </a>
+                    </td>
+                    <td>{{ t[2] }}</td>
+                    <td>{{ t[3] }}</td>
+                    <td><strong style="color: var(--primary-color);">₹{{ t[4] }}</strong></td>
+                    <td>{{ t[5] }}</td>
+                    <td>
+                        <span class="late-days-badge {% if t[6] > 30 %}critical{% elif t[6] > 14 %}warning{% else %}minor{% endif %}">
+                            {{ t[6] }} days
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-occupied">
+                            ❌ Overdue
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+        <!-- All Clear Card -->
+        <div class="all-clear-card">
+            <div class="all-clear-icon">✅</div>
+            <h3>All Tenants Up to Date!</h3>
+            <p>No overdue rent payments. Great job managing your properties!</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

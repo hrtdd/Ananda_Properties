@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Verify Document</h2>
+        
+        <div class="nav-links">
+            <a href="/tenant-profile/{{ tenant_id }}" class="nav-link back">⬅ Back to Profile</a>
+        </div>
+
+        <div class="document-verify-section">
+            <h3 style="margin-bottom: 20px; color: var(--primary-color);">{{ document[0] }}</h3>
+
+            <div class="document-viewer">
+                {% if document[1].endswith('.pdf') %}
+                    <iframe 
+                        src="{{ url_for('static', filename=document[1]) }}"
+                        class="document-iframe"
+                        title="PDF Document">
+                    </iframe>
+                {% else %}
+                    <div class="image-viewer">
+                        <img 
+                            src="{{ url_for('static', filename=document[1]) }}"
+                            alt="{{ document[0] }}"
+                            class="document-view-image">
+                    </div>
+                {% endif %}
+            </div>
+
+            <form method="POST" style="margin-top: 30px;">
+                <div class="form-group">
+                    <div class="checkbox-group" style="background: var(--bg-color); padding: 20px; border-radius: 10px; border: 2px solid var(--border-color);">
+                        <input type="checkbox" name="is_verified" id="is_verified"
+                               {% if document[2] %}checked{% endif %}>
+                        <label for="is_verified" style="font-size: 1.1rem; font-weight: 600;">
+                            Mark as Verified
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit">💾 Save Verification Status</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

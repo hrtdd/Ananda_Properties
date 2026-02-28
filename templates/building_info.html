@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Info - {{ building[0] }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>🏢 Building Info</h2>
+        
+        <div class="nav-links">
+            <a href="/" class="nav-link back">🏠 Dashboard</a>
+            <a href="/current-info" class="nav-link back">📊 Current Info</a>
+        </div>
+
+        <div class="building-info-header">
+            <div class="building-info-icon">🏢</div>
+            <div class="building-info-details">
+                <h3>{{ building[0] }}</h3>
+                <p><strong>Total Floors:</strong> {{ building[1] }}</p>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 30px;">👥 Tenants & Rent Status</h3>
+
+        {% if tenants %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Flat</th>
+                    <th>Rent</th>
+                    <th>Paid Months</th>
+                    <th>Pending Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tenants %}
+                <tr>
+                    <td>
+                        <a href="/tenant-profile/{{ t[0] }}">
+                            <strong>{{ t[1] }}</strong>
+                        </a>
+                    </td>
+                    <td>{{ t[2] }}</td>
+                    <td><strong style="color: var(--primary-color);">₹{{ t[3] }}</strong></td>
+                    <td>{{ t[4] or 0 }}</td>
+                    <td>
+                        {% if t[5] and t[5] > 0 %}
+                            <strong style="color: var(--danger-color);">₹{{ t[5] }}</strong>
+                        {% else %}
+                            <span style="color: var(--success-color);">₹0</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if t[5] == 0 or t[5] is none %}
+                            <span class="status-badge status-vacant" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);">
+                                ✅ Up to Date
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-occupied" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color);">
+                                ❌ Due
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Summary Card -->
+        <div class="rent-summary-card">
+            <div class="summary-item">
+                <span class="summary-label">Total Tenants</span>
+                <span class="summary-value">{{ tenants|length }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Total Pending</span>
+                <span class="summary-value pending">₹{{ tenants | map(attribute=5) | select('number') | sum }}</span>
+            </div>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;">👥</div>
+            <p style="font-size: 1.2rem;">No tenants found in this building.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Flats</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>All Flats</h2>
+        
+        <div class="nav-links">
+            <a href="/" class="nav-link back">🏠 Dashboard</a>
+            <a href="/buildings" class="nav-link back">📋 View Buildings</a>
+            <a href="/add-flat" class="nav-link">➕ Add Flat</a>
+            <a href="/add-furnishing" class="nav-link">🛋️ Add Furnishing</a>
+        </div>
+
+        {% if flats %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Building</th>
+                    <th>Flat No</th>
+                    <th>Floor</th>
+                    <th>BHK</th>
+                    <th>Rent</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in flats %}
+                <tr>
+                    <td><strong>{{ f[0] }}</strong></td>
+                    <td>{{ f[1] }}</td>
+                    <td>{{ f[2] }}</td>
+                    <td>{{ f[3] }}</td>
+                    <td>₹{{ f[4] }}</td>
+                    <td>
+                        <span class="status-badge {% if f[5] %}status-occupied{% else %}status-vacant{% endif %}">
+                            {{ "Occupied" if f[5] else "Vacant" }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="/edit-flat/{{ f[6] }}">✏️ Edit</a>
+                        <a href="/edit-furnishing/{{ f[6] }}">🛋️ Furnishing</a>
+                        <a href="/flat-history/{{ f[6] }}">📜 History</a>
+                        {% if f[5] %}
+                            <a href="#" class="move-out-btn" data-id="{{ f[6] }}" data-flat="{{ f[1] }}" data-building="{{ f[0] }}">🚪 Move Out</a>
+                        {% else %}
+                            <a href="/add-tenant">➕ Add Tenant</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            <p style="font-size: 1.2rem;">No flats found. <a href="/add-flat">Add your first flat</a></p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Move Out Confirmation Modal -->
+    <div id="moveOutModal" class="modal">
+        <div class="modal-box">
+            <div class="modal-icon">🚪</div>
+            <h3>Confirm Move Out</h3>
+            <p class="modal-message">Are you sure you want to mark this flat as vacant?</p>
+            <p class="modal-flat-info"></p>
+            <p class="modal-warning">⚠️ This will update the tenant's move-out date and mark the flat as vacant.</p>
+            <div class="modal-actions">
+                <button id="cancelMoveOutBtn" class="btn-cancel">Cancel</button>
+                <a id="confirmMoveOutBtn" href="#" class="btn-confirm-delete">
+                    Yes, Move Out
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Move out modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('moveOutModal');
+            const moveOutButtons = document.querySelectorAll('.move-out-btn');
+            const cancelBtn = document.getElementById('cancelMoveOutBtn');
+            const confirmBtn = document.getElementById('confirmMoveOutBtn');
+            const flatInfoEl = document.querySelector('.modal-flat-info');
+
+            moveOutButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const flatId = this.getAttribute('data-id');
+                    const flatNo = this.getAttribute('data-flat');
+                    const building = this.getAttribute('data-building');
+                    
+                    flatInfoEl.textContent = `Flat: ${flatNo} | Building: ${building}`;
+                    confirmBtn.href = `/move-out/${flatId}`;
+                    modal.style.display = 'flex';
+                });
+            });
+
+            cancelBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

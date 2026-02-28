@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flat Tenant History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>📜 Tenant History</h2>
+        
+        <div class="nav-links">
+            <a href="/" class="nav-link back">🏠 Dashboard</a>
+            <a href="/flats" class="nav-link back">🏢 Back to Flats</a>
+        </div>
+
+        {% if flat_info %}
+        <div class="flat-info-card">
+            <div class="flat-info-item">
+                <span class="info-label">Flat No:</span>
+                <span class="info-value">{{ flat_info[0] }}</span>
+            </div>
+            <div class="flat-info-item">
+                <span class="info-label">Building:</span>
+                <span class="info-value">{{ flat_info[1] }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if history %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Tenant Name</th>
+                    <th>Move In Date</th>
+                    <th>Move Out Date</th>
+                    <th>Rent Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in history %}
+                <tr>
+                    <td><strong>{{ h[0] }}</strong></td>
+                    <td>{{ h[1] }}</td>
+                    <td>
+                        {% if h[2] %}
+                            <span style="color: var(--text-secondary);">{{ h[2] }}</span>
+                        {% else %}
+                            <span class="status-badge status-vacant" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);">
+                                🏠 Still Living
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td><strong style="color: var(--primary-color);">₹{{ h[3] }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;">📋</div>
+            <p style="font-size: 1.2rem;">No tenant history found for this flat.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

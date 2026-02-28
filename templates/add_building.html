@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Building</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Add Building</h2>
+        
+        <div class="nav-links">
+            <a href="/" class="nav-link back">🏠 Dashboard</a>
+            <a href="/buildings" class="nav-link back">📋 View Buildings</a>
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label>Building Name:</label>
+                <input type="text" name="building_name" required placeholder="Enter building name">
+            </div>
+
+            <div class="form-group">
+                <label>Address:</label>
+                <textarea name="address" required placeholder="Enter complete address"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Total Floors:</label>
+                <input type="number" name="total_floors" required placeholder="Enter number of floors" min="1">
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" name="has_lift" id="has_lift">
+                    <label for="has_lift">Lift Available</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" name="has_parking" id="has_parking">
+                    <label for="has_parking">Parking Available</label>
+                </div>
+            </div>
+
+            <button type="submit">💾 Save Building</button>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

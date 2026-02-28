@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Rent - Ananda Properties</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>📌 Pending Rent Tenants</h2>
+        
+        <div class="nav-links">
+            <a href="/" class="nav-link back">🏠 Dashboard</a>
+            <a href="/rent-alerts" class="nav-link back">🔔 Rent Alerts</a>
+        </div>
+
+        {% if tenants %}
+        <!-- Summary Card -->
+        <div class="pending-summary-card">
+            <div class="summary-icon">💰</div>
+            <div class="summary-info">
+                <h3>{{ tenants|length }} Tenant{{ 's' if tenants|length > 1 else '' }} with Pending Rent</h3>
+                <p>Total Pending Amount: <strong>₹{{ tenants | sum(attribute=7) | default(0) }}</strong></p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Move In Date</th>
+                    <th>Total Months</th>
+                    <th>Paid Months</th>
+                    <th>Pending Months</th>
+                    <th>Pending Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tenants %}
+                <tr>
+                    <td><strong>{{ t[1] }}</strong></td>
+                    <td>{{ t[2] }}</td>
+                    <td>{{ t[4] }}</td>
+                    <td>
+                        <span class="status-badge status-vacant">{{ t[5] }}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-occupied">{{ t[6] }}</span>
+                    </td>
+                    <td>
+                        <strong style="color: var(--danger-color); font-size: 1.1rem;">₹{{ t[7] }}</strong>
+                    </td>
+                    <td>
+                        <a href="/tenant-profile/{{ t[0] }}">👤 View Profile</a>
+                        <a href="/add-rent-payment/{{ t[0] }}">💰 Add Payment</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <!-- All Clear Card -->
+        <div class="all-clear-card">
+            <div class="all-clear-icon">🎉</div>
+            <h3>All Clear!</h3>
+            <p>No pending rent found. All tenants are up to date!</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

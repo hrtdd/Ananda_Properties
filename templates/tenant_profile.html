@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Tenant Profile</h2>
+        
+        <div class="nav-links">
+            <a href="/" class="nav-link back">🏠 Dashboard</a>
+            <a href="/tenant-documents" class="nav-link back">🔍 Back to Search</a>
+            <a href="/upload-tenant-photo/{{ tenant_id }}" class="nav-link">📷 Upload Photo</a>
+            <a href="/add-rent-payment/{{ tenant_id }}" class="nav-link">💰 Add Rent Payment</a>
+            <a href="/rent-history/{{ tenant_id }}" class="nav-link">📜 Rent History</a>
+        </div>
+
+        <div class="profile-section">
+            <div class="profile-photo">
+                {% if tenant[5] %}
+                    <img src="{{ url_for('static', filename=tenant[5]) }}" width="200" alt="Tenant Photo">
+                {% else %}
+                    <img src="https://via.placeholder.com/200?text=No+Photo" width="200" alt="Tenant Photo">
+                {% endif %}
+            </div>
+
+            <div class="profile-details">
+                <div>
+                    <b>Name:</b> {{ tenant[0] }}
+                </div>
+                <div>
+                    <b>Mobile:</b> {{ tenant[1] }}
+                </div>
+                <div>
+                    <b>Profession:</b> {{ tenant[2] or 'N/A' }}
+                </div>
+                <div>
+                    <b>Flat No:</b> {{ tenant[3] }}
+                </div>
+                <div>
+                    <b>Building:</b> {{ tenant[4] }}
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ RENT STATUS SECTION (Only Added Here) -->
+        <hr>
+        <h3>💰 Rent Status</h3>
+
+        <p><b>Move-in Date:</b> {{ tenant[6] }}</p>
+        <p><b>Total Months Stayed:</b> {{ tenant[8] }}</p>
+        <p><b>Paid Months:</b> {{ tenant[7] }}</p>
+        <p><b>Pending Months:</b> {{ tenant[9] }}</p>
+        <p><b>Pending Amount:</b> ₹{{ tenant[10] }}</p>
+
+        {% if tenant[10] == 0 %}
+            <p style="color:green;"><b>✅ Rent Up-to-date</b></p>
+        {% else %}
+            <p style="color:red;"><b>⚠ Rent Pending</b></p>
+        {% endif %}
+        <!-- ✅ RENT STATUS END -->
+
+        <h3>Documents</h3>
+
+        {% if documents %}
+        <div class="documents-grid">
+            {% for d in documents %}
+            <div class="document-card">
+                <div class="document-header">
+                    <h4>{{ d[1] }}</h4>
+                    {% if d[3] %}
+                        <span class="status-badge status-occupied" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);">✅ Verified</span>
+                    {% else %}
+                        <span class="status-badge status-vacant" style="background: rgba(239, 68, 68, 0.1); color: var(--danger-color);">❌ Not Verified</span>
+                    {% endif %}
+                </div>
+
+                {% if d[2] %}
+                <div class="document-preview">
+                    {% if d[2].endswith('.pdf') %}
+                        <div class="pdf-preview">
+                            <div class="pdf-icon">📄</div>
+                            <p>PDF Document</p>
+                        </div>
+                    {% else %}
+                        <img src="{{ url_for('static', filename=d[2]) }}" alt="{{ d[1] }}" class="document-image">
+                    {% endif %}
+                </div>
+
+                <div class="document-actions">
+                    {% if d[2].endswith('.pdf') %}
+                        <a href="{{ url_for('static', filename=d[2]) }}" target="_blank" class="btn-action">📄 View PDF</a>
+                    {% else %}
+                        <a href="{{ url_for('static', filename=d[2]) }}" target="_blank" class="btn-action">🖼️ View Image</a>
+                    {% endif %}
+                    <a href="/upload-document/{{ tenant_id }}/{{ d[0] }}" class="btn-action">🔁 Change</a>
+                    <a href="/verify-document/{{ tenant_id }}/{{ d[0] }}" class="btn-action">
+                        {% if d[3] %}🔍 Review{% else %}✅ Verify{% endif %}
+                    </a>
+                    <a href="{{ url_for('static', filename=d[2]) }}" target="_blank" class="btn-action">🖨️ Print</a>
+                    <a href="#" class="btn-action btn-danger delete-doc-btn" 
+                       data-doc-id="{{ d[0] }}" data-doc-name="{{ d[1] }}">🗑️ Delete</a>
+                </div>
+                {% else %}
+                <div class="document-empty">
+                    <div class="empty-icon">📄</div>
+                    <p>No document uploaded</p>
+                    <a href="/upload-document/{{ tenant_id }}/{{ d[0] }}" class="btn">⬆️ Upload Document</a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            <p style="font-size: 1.2rem;">No documents available.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Delete Document Confirmation Modal -->
+    <div id="deleteDocModal" class="modal">
+        <div class="modal-box">
+            <div class="modal-icon">📄</div>
+            <h3>Delete Document</h3>
+            <p class="modal-message">Are you sure you want to delete this document?</p>
+            <p class="modal-doc-name"></p>
+            <div class="modal-actions">
+                <button id="cancelDocBtn" class="btn-cancel">Cancel</button>
+                <a id="confirmDocDeleteBtn" href="#" class="btn-confirm-delete">
+                    Yes, Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

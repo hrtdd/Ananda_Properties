@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Furnishing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Edit Furnishing</h2>
+        
+        <div class="nav-links">
+            <a href="/" class="nav-link back">🏠 Dashboard</a>
+            <a href="/flats" class="nav-link back">🏢 View Flats</a>
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label style="margin-bottom: 15px;">Select Furnishing Items:</label>
+                <div style="background: white; padding: 20px; border-radius: 10px; border: 2px solid var(--border-color);">
+                    {% for item in items %}
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="items"
+                               value="{{ item[0] }}"
+                               id="item_{{ item[0] }}"
+                               {% if item[0] in selected_items %}checked{% endif %}>
+                        <label for="item_{{ item[0] }}">{{ item[1] }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button type="submit">💾 Save Furnishing</button>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

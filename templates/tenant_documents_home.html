@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Documents</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Tenant Documents</h2>
+        
+        <div class="nav-links">
+            <a href="/" class="nav-link back">🏠 Dashboard</a>
+            <a href="/tenants" class="nav-link back">👥 View Tenants</a>
+        </div>
+
+        <form method="POST" class="search-form">
+            <input type="text" name="search" placeholder="🔍 Search tenant by name..." required>
+            <button type="submit">Search</button>
+        </form>
+
+        {% if tenants and tenants|length > 0 %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Flat No</th>
+                    <th>Building</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tenants %}
+                <tr>
+                    <td><strong>{{ t[1] }}</strong></td>
+                    <td>{{ t[2] }}</td>
+                    <td>{{ t[3] }}</td>
+                    <td>{{ t[4] }}</td>
+                    <td>
+                        <a href="{{ url_for('tenant_profile', tenant_id=t[0]) }}">👤 View Profile</a>
+                        <a href="/upload-tenant-photo/{{ t[0] }}">📷 Upload Photo</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% elif tenants is defined and tenants|length == 0 %}
+        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            <p style="font-size: 1.2rem;">No tenants found. Try a different search term.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

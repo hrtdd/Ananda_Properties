@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenants List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Tenants List</h2>
+
+        <div class="nav-links">
+            <a href="/" class="nav-link back">🏠 Dashboard</a>
+            <a href="/add-tenant" class="nav-link">➕ Add Tenant</a>
+            <a href="/tenant-documents" class="nav-link">📄 Tenant Documents</a>
+        </div>
+
+        {% if tenants %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Profession</th>
+                    <th>Flat No</th>
+                    <th>Building</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for t in tenants %}
+                <tr>
+                    <td><strong>{{ t[1] }}</strong></td>
+                    <td>{{ t[2] }}</td>
+                    <td>{{ t[3] or 'N/A' }}</td>
+                    <td>{{ t[4] }}</td>
+                    <td>{{ t[5] }}</td>
+                    <td>
+                        <a href="/tenant-profile/{{ t[0] }}">👤 View</a>
+                        <a href="#" class="delete-btn" data-id="{{ t[0] }}" data-name="{{ t[1] }}">
+                            🗑 Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+            <p style="font-size: 1.2rem;">No tenants found. <a href="/add-tenant">Add your first tenant</a></p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-box">
+            <div class="modal-icon">⚠️</div>
+            <h3>Confirm Delete</h3>
+            <p class="modal-message">Are you sure you want to delete this tenant?</p>
+            <p class="modal-tenant-name"></p>
+            <div class="modal-actions">
+                <button id="cancelBtn" class="btn-cancel">Cancel</button>
+                <a id="confirmDeleteBtn" href="#" class="btn-confirm-delete">
+                    Yes, Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Delete tenant modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('deleteModal');
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            const tenantNameEl = document.querySelector('.modal-tenant-name');
+
+            deleteButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tenantId = this.getAttribute('data-id');
+                    const tenantName = this.getAttribute('data-name');
+                    
+                    tenantNameEl.textContent = `Tenant: ${tenantName}`;
+                    confirmBtn.href = `/delete-tenant/${tenantId}`;
+                    modal.style.display = 'flex';
+                });
+            });
+
+            cancelBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
