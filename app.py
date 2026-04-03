@@ -3,25 +3,29 @@ import psycopg2
 import os
 from werkzeug.utils import secure_filename
 from flask_bcrypt import Bcrypt
+from dotenv import load_dotenv
+import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 app = Flask(__name__)
-app.secret_key = "supersecretkey"
+app.secret_key = os.getenv("SECRET_KEY")
 
 bcrypt = Bcrypt(app)
+import random
+otp_store = {}
+import os
 
 def get_db_connection():
-    return psycopg2.connect(
-        host="localhost",
-        database="Tanant_Records",
-        user="postgres",
-        password="Hanuman123.."
-    )
-try:
-    conn = get_db_connection()
-    print("DATABASE CONNECTED SUCCESSFULLY")
-    conn.close()
-except Exception as e:
-    print("DATABASE ERROR:", e)
+    if os.getenv("VERCEL") == "1":
+        return psycopg2.connect(os.getenv("DATABASE_URL"))
+    else:
+        return psycopg2.connect(
+            host="localhost",
+            database="Tanant_Records",
+            user="postgres",
+            password="Hanuman123.."
+        )
 
 ALLOWED_DOC_EXTENSIONS = {"png", "jpg", "jpeg", "pdf"}
 
@@ -1068,6 +1072,76 @@ def login():
         return "Invalid Email or Password"
 
     return render_template("login.html")
+@app.route("/tenant-login", methods=["GET", "POST"])
+def tenant_login():
+    if request.method == "POST":
+        name = request.form["name"]
+        phone = request.form["phone"]
+        building = request.form["building"]
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT t.id, t.mobile
+            FROM tenants t
+            JOIN flats f ON t.flat_id = f.id
+            JOIN buildings b ON f.building_id = b.id
+            WHERE t.full_name=%s AND t.mobile=%s AND b.building_name=%s
+        """, (name, phone, building))
+
+        tenant = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if tenant:
+            otp = str(random.randint(100000, 999999))
+            otp_store[tenant[0]] = otp
+
+            print("OTP:", otp)  # abhi SMS nahi, console
+
+            session["temp_tenant"] = tenant[0]
+
+            return redirect("/verify-tenant-otp")
+
+        return "Invalid Details ❌"
+
+    return render_template("tenant_login.html")
+@app.route("/verify-tenant-otp", methods=["GET", "POST"])
+def verify_tenant_otp():
+    if request.method == "POST":
+        entered_otp = request.form["otp"]
+        tenant_id = session.get("temp_tenant")
+
+        if tenant_id in otp_store and otp_store[tenant_id] == entered_otp:
+            session.pop("temp_tenant", None)
+            session["tenant_id"] = tenant_id
+
+            return redirect("/tenant-dashboard")
+
+        return "Wrong OTP ❌"
+
+    return render_template("tenant_otp.html")
+@app.route("/tenant-dashboard")
+def tenant_dashboard():
+    if "tenant_id" not in session:
+        return redirect("/tenant-login")
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT full_name
+        FROM tenants
+        WHERE id=%s
+    """, (session["tenant_id"],))
+
+    tenant = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return render_template("tenant_dashboard.html", tenant=tenant)
 @app.route("/logout")
 def logout():
     session.clear()
