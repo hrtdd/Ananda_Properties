@@ -4,7 +4,7 @@ import os
 from werkzeug.utils import secure_filename
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
-import os
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -14,7 +14,7 @@ app.secret_key = os.getenv("SECRET_KEY")
 bcrypt = Bcrypt(app)
 import random
 otp_store = {}
-import os
+
 
 def get_db_connection():
     if os.getenv("VERCEL") == "1":
@@ -1149,3 +1149,4 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
+    app = app
