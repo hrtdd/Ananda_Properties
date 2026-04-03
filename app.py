@@ -52,7 +52,7 @@ def add_building():
         cur = conn.cursor()
 
         cur.execute("""
-    INSERT INTO buildings
+    INSERT INTO public.buildings
     (user_id, building_name, address, total_floors, has_lift, has_parking)
     VALUES (%s, %s, %s, %s, %s, %s)
 """, (
